@@ -11,10 +11,13 @@ public class Main {
 
     public static void main(String args[]) {
         //TODO request path
-        String path = "C:\\Users\\Wong\\Downloads\\white.png";
+//        String path = "C:\\Users\\Wong\\Downloads\\1602345563967.jpg";
+//        String path = "C:\\Users\\Wong\\Downloads\\rainbow.jpg";
+        String path = "C:\\Users\\Wong\\Downloads\\1602344081046.jpg";
+
 
         //TODO request number
-        int spots = 5;
+        int spots = 8;
 
         //TODO iteration
         int iteration = 10;
