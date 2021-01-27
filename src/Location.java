@@ -7,7 +7,7 @@ public class Location {
     private int _column = 0;
     private Color _colour = null;
     private Color _last = null;
-    private Integer _id = null;
+    private Integer _id;
 
     private List<Color> _close = new ArrayList<>();
 

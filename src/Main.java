@@ -6,23 +6,69 @@ import java.util.Scanner;
 import javax.imageio.ImageIO;
 
 public class Main {
-    private static Scanner scanner = new java.util.Scanner(System.in);
+    private static Scanner _scanner = new java.util.Scanner(System.in);
     private static ImagePixelator _imagePixel = ImagePixelator.getInstance();
 
     public static void main(String args[]) {
         //TODO request path
 //        String path = "C:\\Users\\Wong\\Downloads\\1602345563967.jpg";
 //        String path = "C:\\Users\\Wong\\Downloads\\rainbow.jpg";
-        String path = "C:\\Users\\Wong\\Downloads\\1602344081046.jpg";
+//        String path = "C:\\Users\\Wong\\Downloads\\1602344081046.jpg";
+
+        Integer spots = null;
+        Integer iteration = null;
+        BufferedImage image = null;
 
 
-        //TODO request number
-        int spots = 8;
 
-        //TODO iteration
-        int iteration = 10;
+        while (image==null){
+            System.out.println("Please provide file path");
+            image=readFile();
+        }
 
+        while (spots==null){
+            System.out.println("How many colours would you like your image to be made of");
+            spots=readInt();
+            if (spots!=null && spots>image.getWidth()* image.getHeight()){
+                spots=null;
+            }
+        }
 
-        _imagePixel.pixelate(path, spots,iteration);
+        while (iteration==null){
+            System.out.println("How many rounds of iterations would you like to process through");
+            iteration=readInt();
+        }
+
+        _imagePixel.pixelate(image, spots,iteration);
+    }
+
+    private static BufferedImage readFile(){
+        BufferedImage _img = null;
+
+        String temp = _scanner.nextLine();
+        try {
+            File f = new File(temp);
+            _img = ImageIO.read(f);
+
+            //calculate width
+
+        } catch (IOException e) {
+            System.out.println(e);
+            return null;
+        }
+        return _img;
+    }
+
+    private static Integer readInt(){
+        Integer number = null;
+        try {
+            String temp = _scanner.nextLine();
+            number = Integer.parseInt(temp);
+        } catch (NumberFormatException e){
+            System.out.println("Please provide a whole number");
+            return null;
+        }
+
+        return number;
     }
 }

@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.lang.Math;
+import java.util.Scanner;
 
 public class ImagePixelator {
     private static ImagePixelator instance = null;
+
 
     private BufferedImage _img = null;
     private File _f = null;
@@ -17,25 +19,31 @@ public class ImagePixelator {
     private List<Location> _coOrdinates = new ArrayList<>();
     private Integer[][] _assignment = null;
 
-    public void pixelate(String path, int numbers,int iteration){
+    public void pixelate(BufferedImage image, int numbers,int iteration){
+
+        _img =image;
+        _width=image.getWidth();
+        _height=image.getHeight();
 
 
-        //read image and TODO ensure a valid image is provided
-        try {
-            _f = new File(path);
-            _img = ImageIO.read(_f);
-        } catch (IOException e) {
-            System.out.println(e);
-        }
-
-        //get image width and height
-        _width = _img.getWidth();
-        _height = _img.getHeight();
-
-        //ensure number provided is less than width*height TODO maybe change effect
-        if (numbers> _width * _height){
-            return;
-        }
+//        //read image and TODO ensure a valid image is provided
+//        try {
+//            _f = new File(path);
+//            _img = ImageIO.read(_f);
+//        } catch (IOException e) {
+//            System.out.println(e);
+//        }
+//
+//        //get image width and height
+//        _width = _img.getWidth();
+//        _height = _img.getHeight();
+//
+//        //ensure number provided is less than width*height TODO maybe change effect
+//        while (numbers> _width * _height){
+//            System.out.println("You have provided a number larger than the dimension of the image");
+//            System.out.println("Please provide a number less than " + (_width*_height));
+//            S
+//        }
 
         SelectKRandomPoints(numbers);
 
@@ -168,12 +176,15 @@ public class ImagePixelator {
             updateMeans();
 
             if (sameMean()){
-                break;
+                System.out.println("Converged" );
+                return;
             }
 
-            System.out.println("Run: " + runs );
             runs++;
+            System.out.println("Completed Run: " + runs );
         }
+        System.out.println("Did not converge");
+
     }
 
     private boolean sameMean(){
@@ -184,6 +195,8 @@ public class ImagePixelator {
         }
         return true;
     }
+
+
 
     public static ImagePixelator getInstance(){
         if (instance==null){
