@@ -19,56 +19,31 @@ public class ImagePixelator {
     private List<Location> _coOrdinates = new ArrayList<>();
     private Integer[][] _assignment = null;
 
-    public void pixelate(BufferedImage image, int numbers,int iteration){
+    public BufferedImage pixelate(BufferedImage image, int numbers, int iteration){
 
         _img =image;
         _width=image.getWidth();
         _height=image.getHeight();
 
 
-//        //read image and TODO ensure a valid image is provided
-//        try {
-//            _f = new File(path);
-//            _img = ImageIO.read(_f);
-//        } catch (IOException e) {
-//            System.out.println(e);
-//        }
-//
-//        //get image width and height
-//        _width = _img.getWidth();
-//        _height = _img.getHeight();
-//
-//        //ensure number provided is less than width*height TODO maybe change effect
-//        while (numbers> _width * _height){
-//            System.out.println("You have provided a number larger than the dimension of the image");
-//            System.out.println("Please provide a number less than " + (_width*_height));
-//            S
-//        }
-
         SelectKRandomPoints(numbers);
 
         KMeanRGB(iteration);
 
-//        //set the pixel value
-//        p = (a << 24) | (r << 16) | (g << 8) | b;
-//        _img.setRGB(0, 0, p);
-//
         //write image
         //overwrite original pixels
+        BufferedImage output = new BufferedImage(_width,_height,_img.getType());
         for (int width=0;width<_width;width++){
             for (int height=0;height<_height;height++){
                 //get pixel colour value
                 int id =_assignment[height][width];
 //                _coOrdinates.get(id).getColour()
-                _img.setRGB(width,height,_coOrdinates.get(id).getColour().getRGB());
+                output.setRGB(width,height,_coOrdinates.get(id).getColour().getRGB());
             }
         }
-        try {
-            _f = new File("C:\\Users\\Wong\\Downloads\\Out.png");
-            ImageIO.write(_img, "png", _f);
-        } catch (IOException e) {
-            System.out.println(e);
-        }
+
+        return output;
+
     }
 
     /**
@@ -119,9 +94,6 @@ public class ImagePixelator {
             pos.setColor(new Color(pixel, true));
         }
     }
-
-
-    /*** should be working ***/
 
 
     private double squareDistance(Location point, Color imageColour){
