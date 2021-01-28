@@ -11,49 +11,46 @@ public class Main {
     private static String path = "";
 
     public static void main(String args[]) {
-        //TODO request path
-//        String path = "C:\\Users\\Wong\\Downloads\\1602345563967.jpg";
-//        String path = "C:\\Users\\Wong\\Downloads\\rainbow.jpg";
-//        String path = "C:\\Users\\Wong\\Downloads\\1602344081046.jpg";
+
+//        C:\\Users\\Wong\\Downloads\\1602345563967.jpg
+//        C:\\Users\\Wong\\Downloads\\1602344081046.jpg
+//        String asd = "C:\Users\Wong\Downloads\1602344081046.jpg";
 
         Integer spots = null;
         Integer iteration = null;
         BufferedImage image = null;
 
+        //request file path
         while (image == null) {
             System.out.println("Please provide file path");
             image = readFile();
         }
 
+        //request number of colours
         while (spots == null) {
             System.out.println("How many colours would you like your image to be made of");
             spots = readInt();
-            if (spots != null && spots > image.getWidth() * image.getHeight()) {
+            if (spots != null &&  (spots > image.getWidth() * image.getHeight() || spots<3)) {
+                System.out.println("Please provide a number larger than 2, but smaller than "+(image.getWidth() * image.getHeight()));
                 spots = null;
             }
         }
 
+        //request number of max iterations
         while (iteration == null) {
             System.out.println("How many rounds of iterations would you like to process through");
             iteration = readInt();
         }
 
         //create directory
-        //check if directory already exists
+        createFolder();
 
-        for (int num = 1; num <= spots; num++) {
+
+        for (int num = 2; num <= spots; num++) {
             BufferedImage out = _imagePixel.pixelate(image, num, iteration);
 
-            try {
-                //make path for output
-
-            File f = new File("C:\\Users\\Wong\\Downloads\\Out"+num+".png");
-//                File f = new File(path.replace());
-
-                ImageIO.write(out, "png", f);
-            } catch (IOException e) {
-                System.out.println(e);
-            }
+            writeImage(out,num);
+            System.out.println("Finished Writing colour "+num +"\n");
         }
     }
 
@@ -70,6 +67,25 @@ public class Main {
         }
         path = temp;
         return _img;
+    }
+
+    private static void createFolder(){
+        File dir = new File(path.substring(0,path.lastIndexOf("\\"))+"Output\\");
+        boolean bool = dir.mkdir();
+        if (bool){
+            System.out.println("Output Directory has been made");
+        }
+    }
+
+    private static void writeImage(BufferedImage output, int colours){
+        try {
+            File f = new File(path.substring(0,path.lastIndexOf("\\")+1)+"Output\\"+path.substring(path.lastIndexOf("\\"),path.lastIndexOf("."))+"-"+colours+".jpg");
+//                File f = new File(path.replace());
+
+            ImageIO.write(output, "png", f);
+        } catch (IOException e) {
+            System.out.println(e);
+        }
     }
 
     private static Integer readInt() {

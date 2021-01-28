@@ -89,7 +89,6 @@ public class ImagePixelator {
     private void setRGBColours(){
         for (Location pos : _coOrdinates){
             //get pixel
-            //todo getrgb feels kind of weird
             int pixel = _img.getRGB(pos.getColumn(),pos.getRow());
             pos.setColor(new Color(pixel, true));
         }
@@ -148,12 +147,12 @@ public class ImagePixelator {
             updateMeans();
 
             if (sameMean()){
-                System.out.println("Converged" );
+                System.out.println("Colours Converged" );
                 return;
             }
 
             runs++;
-            System.out.println("Completed Run: " + runs );
+            System.out.println("Completed Iteration: " + runs );
         }
         System.out.println("Did not converge");
 
