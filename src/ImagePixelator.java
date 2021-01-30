@@ -11,13 +11,11 @@ import java.util.Scanner;
 public class ImagePixelator {
     private static ImagePixelator instance = null;
     private InputReader _reader = InputReader.getInstance();
-
     private BufferedImage _img = null;
     private String _path = null;
     private Integer _width = null;
     private Integer _height = null;
     private List<Location> _coOrdinates = new ArrayList<>();
-//    private Integer[][] _assignment = null;
     private Integer _iteration = null;
     private Integer _colours = null;
     private List<ImagePixel> _pixels = new ArrayList<>();
@@ -70,36 +68,20 @@ public class ImagePixelator {
         // pixelate and write
         for (int num = 2; num <= _colours; num++) {
 
-
             SelectKRandomPoints(num);
-
             KMeanRGB(_iteration);
 
             //write image
+            //create new image
             BufferedImage output = new BufferedImage(_width, _height, _img.getType());
-//            for (int width = 0; width < _width; width++) {
-//                for (int height = 0; height < _height; height++) {
-//                    //get pixel colour value
-//                    int id = _assignment[height][width];
-//                    output.setRGB(width, height, _coOrdinates.get(id).getColour().getRGB());
-//                }
-//            }
-
             for (ImagePixel pixel: _pixels){
                 output.setRGB(pixel.getColumn(),pixel.getRow(),_coOrdinates.get(pixel.getId()).getColour().getRGB());
             }
-
-
             writeImage(output, num, filePath);
 
-            System.out.println("Finished Writing colour " + num + "\n");
         }
     }
 
-    /**
-     * method
-     * @param iteration
-     */
     private void KMeanRGB(int iteration) {
         int runs = 0;
         while (runs < iteration) {
@@ -119,43 +101,10 @@ public class ImagePixelator {
     }
 
     private void assignToCluster() {
-        //generate assignment array
-//        _assignment = new Integer[_height][_width];
-        //using the data of the image, compare which randomly selected point it is closest to
-//        for (int width = 0; width < _width; width++) {
-//            for (int height = 0; height < _height; height++) {
-//                Double current = null;
-//                Color pixel = null;
-//                for (Location point : _coOrdinates) {
-//                    pixel = new Color(_img.getRGB(width, height), true);
-//                    double distance = squareDistance(point, pixel);
-//                    if (current == null || distance < current) {
-//                        _assignment[height][width] = point.getId();
-//                        current = distance;
-//                        if (current == 0) {
-//                            break;
-//                        }
-//                    }
-//                }
-//
-//                //assign to appropriate point
-//                //find point
-//                int id = _assignment[height][width];
-//                for (Location point : _coOrdinates) {
-//                    if (point.getId() == id) {
-//                        point.addList(pixel);
-//                        break;
-//                    }
-//                }
-//            }
-//        }
-
-
         for (ImagePixel pix :_pixels){
             Double current = null;
-            Color pixel = null;
             for (Location point : _coOrdinates) {
-                pixel = new Color(_img.getRGB(pix.getColumn(),pix.getRow()), true);
+                Color pixel = new Color(_img.getRGB(pix.getColumn(),pix.getRow()), true);
                 double distance = squareDistance(point, pixel);
                 if (current == null || distance < current) {
                     pix.setId(point.getId());
@@ -167,15 +116,7 @@ public class ImagePixelator {
             }
 
             //assign to appropriate point
-            //find point
-            int id = pix.getId();
-            _coOrdinates.get(id).addList(pix.getColour());
-//            for (Location point : _coOrdinates) {
-//                if (point.getId() == id) {
-//                    point.addList(pixel);
-//                    break;
-//                }
-//            }
+            _coOrdinates.get(pix.getId()).addList(pix.getColour());
         }
 
     }
@@ -276,6 +217,7 @@ public class ImagePixelator {
         try {
             File f = new File(filePath[0] + filePath[1] + "-" + colours + filePath[2]);
             ImageIO.write(output, filePath[2].substring(1), f);
+            System.out.println("Finished Writing colour " + colours + "\n");
         } catch (IOException e) {
             System.out.println(e);
         }
