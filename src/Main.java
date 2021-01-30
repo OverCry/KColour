@@ -14,9 +14,6 @@ public class Main {
 
         _imagePixel.pixelate();
 
-
-
-
     }
 
 

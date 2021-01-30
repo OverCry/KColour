@@ -11,14 +11,16 @@ import java.util.Scanner;
 public class ImagePixelator {
     private static ImagePixelator instance = null;
     private InputReader _reader = InputReader.getInstance();
+
     private BufferedImage _img = null;
     private String _path = null;
     private Integer _width = null;
     private Integer _height = null;
     private List<Location> _coOrdinates = new ArrayList<>();
-    private Integer[][] _assignment = null;
+//    private Integer[][] _assignment = null;
     private Integer _iteration = null;
     private Integer _colours = null;
+    private List<ImagePixel> _pixels = new ArrayList<>();
 
     public void pixelate() {
 
@@ -30,13 +32,12 @@ public class ImagePixelator {
             _path = _reader.readFilePath();
         }
 
-        filePath[0] = _path.substring(0, _path.lastIndexOf("\\")) + "\\Output\\";
-        filePath[1] = _path.substring(_path.lastIndexOf("\\") + 1, _path.lastIndexOf("."));
-        filePath[2] = _path.substring(_path.lastIndexOf("."));
+        filePath[0] = _path.substring(0, _path.lastIndexOf("\\")) + "\\Output\\"; //new folder path
+        filePath[1] = _path.substring(_path.lastIndexOf("\\") + 1, _path.lastIndexOf(".")); //name of original image
+        filePath[2] = _path.substring(_path.lastIndexOf(".")); //image type
 
         // create buffered image
         _img = setImg(_path);
-
         _width = _img.getWidth();
         _height = _img.getHeight();
 
@@ -56,15 +57,17 @@ public class ImagePixelator {
             _iteration = _reader.readInt();
         }
 
-
-
-
+        //create pixel list
+        for (int width = 0; width < _width; width++) {
+            for (int height = 0; height < _height; height++) {
+                _pixels.add(new ImagePixel(height,width, new Color(_img.getRGB(width, height), true)));
+            }
+        }
 
         //create directory the output will go to
         createFolder(filePath[0]);
 
-
-//                 pixelate and write
+        // pixelate and write
         for (int num = 2; num <= _colours; num++) {
 
 
@@ -74,12 +77,16 @@ public class ImagePixelator {
 
             //write image
             BufferedImage output = new BufferedImage(_width, _height, _img.getType());
-            for (int width = 0; width < _width; width++) {
-                for (int height = 0; height < _height; height++) {
-                    //get pixel colour value
-                    int id = _assignment[height][width];
-                    output.setRGB(width, height, _coOrdinates.get(id).getColour().getRGB());
-                }
+//            for (int width = 0; width < _width; width++) {
+//                for (int height = 0; height < _height; height++) {
+//                    //get pixel colour value
+//                    int id = _assignment[height][width];
+//                    output.setRGB(width, height, _coOrdinates.get(id).getColour().getRGB());
+//                }
+//            }
+
+            for (ImagePixel pixel: _pixels){
+                output.setRGB(pixel.getColumn(),pixel.getRow(),_coOrdinates.get(pixel.getId()).getColour().getRGB());
             }
 
 
@@ -89,6 +96,10 @@ public class ImagePixelator {
         }
     }
 
+    /**
+     * method
+     * @param iteration
+     */
     private void KMeanRGB(int iteration) {
         int runs = 0;
         while (runs < iteration) {
@@ -109,37 +120,65 @@ public class ImagePixelator {
 
     private void assignToCluster() {
         //generate assignment array
-        _assignment = new Integer[_height][_width];
+//        _assignment = new Integer[_height][_width];
         //using the data of the image, compare which randomly selected point it is closest to
-        for (int width = 0; width < _width; width++) {
-            for (int height = 0; height < _height; height++) {
-                Double current = null;
-                Color pixel = null;
-                for (Location point : _coOrdinates) {
-                    pixel = new Color(_img.getRGB(width, height), true);
-                    double distance = squareDistance(point, pixel);
-                    if (current == null || distance < current) {
-                        _assignment[height][width] = point.getId();
-                        current = distance;
-                        if (current == 0) {
-                            break;
-                        }
-                    }
-                }
+//        for (int width = 0; width < _width; width++) {
+//            for (int height = 0; height < _height; height++) {
+//                Double current = null;
+//                Color pixel = null;
+//                for (Location point : _coOrdinates) {
+//                    pixel = new Color(_img.getRGB(width, height), true);
+//                    double distance = squareDistance(point, pixel);
+//                    if (current == null || distance < current) {
+//                        _assignment[height][width] = point.getId();
+//                        current = distance;
+//                        if (current == 0) {
+//                            break;
+//                        }
+//                    }
+//                }
+//
+//                //assign to appropriate point
+//                //find point
+//                int id = _assignment[height][width];
+//                for (Location point : _coOrdinates) {
+//                    if (point.getId() == id) {
+//                        point.addList(pixel);
+//                        break;
+//                    }
+//                }
+//            }
+//        }
 
-                //assign to appropriate point
-                //find point
-                int id = _assignment[height][width];
-                for (Location point : _coOrdinates) {
-                    if (point.getId() == id) {
-                        point.addList(pixel);
+
+        for (ImagePixel pix :_pixels){
+            Double current = null;
+            Color pixel = null;
+            for (Location point : _coOrdinates) {
+                pixel = new Color(_img.getRGB(pix.getColumn(),pix.getRow()), true);
+                double distance = squareDistance(point, pixel);
+                if (current == null || distance < current) {
+                    pix.setId(point.getId());
+                    current = distance;
+                    if (current == 0) {
                         break;
                     }
                 }
             }
-        }
-    }
 
+            //assign to appropriate point
+            //find point
+            int id = pix.getId();
+            _coOrdinates.get(id).addList(pix.getColour());
+//            for (Location point : _coOrdinates) {
+//                if (point.getId() == id) {
+//                    point.addList(pixel);
+//                    break;
+//                }
+//            }
+        }
+
+    }
 
     /**
      * randomly select a number of unique locations
@@ -252,7 +291,6 @@ public class ImagePixelator {
         }
         return buff;
     }
-
 
     /*** getting instance ***/
 
