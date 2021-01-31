@@ -30,8 +30,10 @@ public class ImagePixelator {
             _path = _reader.readFilePath();
         }
 
-        filePath[0] = _path.substring(0, _path.lastIndexOf("\\")) + "\\Output\\"; //new folder path
-        filePath[1] = _path.substring(_path.lastIndexOf("\\") + 1, _path.lastIndexOf(".")); //name of original image
+        _path.replace("\\",File.separator);
+        _path.replace("//",File.separator);
+        filePath[0] = _path.substring(0, _path.lastIndexOf(File.separator)) + File.separator+"Output"+File.separator; //new folder path
+        filePath[1] = _path.substring(_path.lastIndexOf(File.separator) + 1, _path.lastIndexOf(".")); //name of original image
         filePath[2] = _path.substring(_path.lastIndexOf(".")); //image type
 
         // create buffered image

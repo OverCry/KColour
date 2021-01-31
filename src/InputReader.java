@@ -24,7 +24,7 @@ public class InputReader {
     }
 
     public Integer readInt() {
-        Integer number = null;
+        Integer number;
         try {
             String temp = _scanner.nextLine();
             number = Integer.parseInt(temp);
